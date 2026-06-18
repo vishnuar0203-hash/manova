@@ -17,7 +17,16 @@ export function MoodBoardTab() {
       {/* ── Hero Panel ── */}
       <div className="relative overflow-hidden rounded-2xl border border-border/60">
         <AspectRatio ratio={21 / 8}>
-          <div className={`w-full h-full bg-gradient-to-br ${heroImage.color}`}>
+          <div className="w-full h-full bg-muted">
+            {heroImage.image ? (
+              <img
+                src={heroImage.image}
+                alt={heroImage.label}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className={`w-full h-full bg-gradient-to-br ${heroImage.color}`} />
+            )}
             <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent" />
           </div>
         </AspectRatio>
@@ -92,7 +101,16 @@ export function MoodBoardTab() {
             const colSpans = [5, 4, 3]
             return (
               <div key={img.label} className="group" style={{ gridColumn: `span ${colSpans[i]}` }}>
-                <div className={`relative overflow-hidden rounded-xl border border-border/60 h-40 bg-gradient-to-br ${img.color} hover:shadow-md transition-all duration-200`}>
+                <div className={`relative overflow-hidden rounded-xl border border-border/60 h-40 bg-muted hover:shadow-md transition-all duration-200`}>
+                  {img.image ? (
+                    <img
+                      src={img.image}
+                      alt={img.label}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className={`w-full h-full bg-gradient-to-br ${img.color}`} />
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                   <div className="absolute bottom-2 left-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                     <p className="text-[10px] text-white font-medium">{img.label}</p>
@@ -108,7 +126,16 @@ export function MoodBoardTab() {
             const colSpans = [7, 5]
             return (
               <div key={img.label} className="group" style={{ gridColumn: `span ${colSpans[i]}` }}>
-                <div className={`relative overflow-hidden rounded-xl border border-border/60 h-48 bg-gradient-to-br ${img.color} hover:shadow-md transition-all duration-200`}>
+                <div className={`relative overflow-hidden rounded-xl border border-border/60 h-48 bg-muted hover:shadow-md transition-all duration-200`}>
+                  {img.image ? (
+                    <img
+                      src={img.image}
+                      alt={img.label}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className={`w-full h-full bg-gradient-to-br ${img.color}`} />
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                   <div className="absolute bottom-2 left-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                     <p className="text-[10px] text-white font-medium">{img.label}</p>
@@ -128,17 +155,16 @@ export function MoodBoardTab() {
         <h3 className="text-sm font-semibold">Material & Texture References</h3>
         <div className="grid grid-cols-5 gap-3">
           {[
-            { name: "Honed Limestone", swatch: "#e8dcc8", sub: "Floor & Facade" },
-            { name: "Oiled Oud Timber", swatch: "#7a5230", sub: "Ceiling & Frames" },
-            { name: "Polished Plaster", swatch: "#f5efe6", sub: "Interior Walls" },
-            { name: "Oxidized Bronze", swatch: "#8b6914", sub: "Fixtures & Rails" },
-            { name: "Terracotta Accent", swatch: "#c06040", sub: "Roof & Accents" },
+            { name: "Honed Limestone", image: "/tex-limestone.webp", sub: "Floor & Facade" },
+            { name: "Oiled Oud Timber", image: "/tex-oud-timber.webp", sub: "Ceiling & Frames" },
+            { name: "Polished Plaster", image: "/tex-plaster.webp", sub: "Interior Walls" },
+            { name: "Oxidized Bronze", image: "/tex-bronze.webp", sub: "Fixtures & Rails" },
+            { name: "Terracotta Accent", image: "/tex-terracotta.webp", sub: "Roof & Accents" },
           ].map((mat) => (
             <div key={mat.name} className="group cursor-pointer space-y-2">
-              <div
-                className="w-full h-16 rounded-lg border border-border/50 group-hover:shadow-md group-hover:-translate-y-0.5 transition-all duration-200"
-                style={{ backgroundColor: mat.swatch }}
-              />
+              <div className="w-full h-16 rounded-lg border border-border/50 group-hover:shadow-md group-hover:-translate-y-0.5 transition-all duration-200 overflow-hidden bg-muted">
+                <img src={mat.image} alt={mat.name} className="w-full h-full object-cover" />
+              </div>
               <div>
                 <p className="text-[11px] font-semibold truncate">{mat.name}</p>
                 <p className="text-[10px] text-muted-foreground">{mat.sub}</p>
@@ -163,7 +189,13 @@ export function MoodBoardTab() {
           <CardContent className="space-y-3">
             {moodBoard.furnitureRefs.map((ref) => (
               <div key={ref.name} className="flex gap-3 p-2.5 rounded-lg hover:bg-muted/40 transition-colors group cursor-pointer">
-                <div className={`w-14 h-14 rounded-lg bg-gradient-to-br ${ref.color} shrink-0 border border-border/40`} />
+                <div className="w-14 h-14 rounded-lg shrink-0 border border-border/40 overflow-hidden bg-muted">
+                  {ref.image ? (
+                    <img src={ref.image} alt={ref.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className={`w-full h-full bg-gradient-to-br ${ref.color}`} />
+                  )}
+                </div>
                 <div className="flex-1 min-w-0 space-y-0.5 self-center">
                   <p className="text-sm font-semibold group-hover:text-primary transition-colors">{ref.name}</p>
                   <Badge variant="outline" className="text-[10px]">{ref.style}</Badge>
@@ -184,8 +216,15 @@ export function MoodBoardTab() {
           <CardContent className="space-y-3">
             {moodBoard.lightingRefs.map((ref) => (
               <div key={ref.name} className="flex gap-3 p-2.5 rounded-lg hover:bg-muted/40 transition-colors group cursor-pointer">
-                <div className={`w-14 h-14 rounded-lg bg-gradient-to-br ${ref.color} shrink-0 border border-border/40 flex items-end justify-end p-1.5`}>
-                  <Lightbulb className="w-3 h-3 text-white/60" />
+                <div className="w-14 h-14 rounded-lg shrink-0 border border-border/40 overflow-hidden bg-muted relative">
+                  {ref.image ? (
+                    <img src={ref.image} alt={ref.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className={`w-full h-full bg-gradient-to-br ${ref.color}`} />
+                  )}
+                  <div className="absolute bottom-1 right-1">
+                    <Lightbulb className="w-3 h-3 text-white/70 drop-shadow" />
+                  </div>
                 </div>
                 <div className="flex-1 min-w-0 space-y-0.5 self-center">
                   <p className="text-sm font-semibold group-hover:text-primary transition-colors">{ref.name}</p>

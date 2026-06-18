@@ -11,6 +11,7 @@ interface ReferenceItem {
   location: string
   architect: string
   color: string
+  image?: string
   similarity: number
   year: string
 }
@@ -40,9 +41,18 @@ function ReferenceCard({ item, size = "default" }: { item: ReferenceItem; size?:
       onMouseLeave={() => setHovered(false)}
     >
       {/* Image zone */}
-      <div className={`relative w-full bg-gradient-to-br ${item.color} ${size === "large" ? "h-64" : "h-44"} overflow-hidden`}>
+      <div className={`relative w-full ${size === "large" ? "h-64" : "h-44"} overflow-hidden bg-muted`}>
+        {item.image ? (
+          <img
+            src={item.image}
+            alt={item.name}
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        ) : (
+          <div className={`w-full h-full bg-gradient-to-br ${item.color}`} />
+        )}
         {/* Dark overlay on hover */}
-        <div className={`absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300`} />
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
 
         {/* Similarity score — always visible */}
         <div className="absolute top-3 right-3">

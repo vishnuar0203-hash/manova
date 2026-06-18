@@ -58,10 +58,17 @@ export function MaterialsTab() {
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
                 {zone.materials.map((m) => (
                   <div key={m.id} className="space-y-2.5">
-                    <div
-                      className="aspect-square rounded-lg border border-border shadow-sm hover:shadow-md transition-shadow"
-                      style={{ backgroundColor: m.color }}
-                    />
+                    <div className="aspect-square rounded-lg border border-border shadow-sm hover:shadow-md transition-shadow overflow-hidden bg-muted">
+                      {m.image ? (
+                        <img
+                          src={m.image}
+                          alt={m.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full" style={{ backgroundColor: m.color }} />
+                      )}
+                    </div>
                     <div className="space-y-1.5">
                       <p className="text-xs font-semibold leading-tight">{m.name}</p>
                       <p className="text-[10px] text-muted-foreground">{m.finish}</p>
