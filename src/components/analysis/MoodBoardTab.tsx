@@ -1,82 +1,156 @@
 import { mockAnalysis } from "@/data/mock-analysis"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Separator } from "@/components/ui/separator"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
-import { Armchair, Lightbulb } from "lucide-react"
+import { Armchair, Lightbulb, Palette, Quote } from "lucide-react"
 
 export function MoodBoardTab() {
   const { moodBoard } = mockAnalysis
 
+  const heroImage = moodBoard.images[0]
+  const supportingImages = moodBoard.images.slice(1)
+
   return (
     <div className="space-y-8">
-      {/* Mood Header */}
-      <Card className="border-border/70 overflow-hidden">
-        <CardContent className="pt-6 pb-6">
-          <div className="flex flex-col sm:flex-row sm:items-start gap-6">
-            <div className="space-y-1">
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">Overall Mood</p>
-              <p className="text-2xl font-bold">{moodBoard.mood}</p>
-            </div>
-            <div className="sm:border-l sm:border-border sm:pl-6 flex-1 space-y-3">
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">Mood Narrative</p>
-              <p className="text-sm text-muted-foreground leading-relaxed">{moodBoard.narrative}</p>
-            </div>
-          </div>
-          <div className="mt-4 flex flex-wrap gap-1.5">
-            {moodBoard.textures.map((t) => (
-              <Badge key={t} variant="outline" className="text-[10px]">{t}</Badge>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
 
-      {/* Colour Palette */}
-      <Card className="border-border/70">
-        <CardHeader className="pb-4">
-          <CardTitle className="text-sm font-semibold">Colour Palette</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-5 gap-3">
-            {moodBoard.palette.map((c) => (
-              <div key={c.hex} className="space-y-2">
-                <div
-                  className="w-full aspect-[3/4] rounded-lg border border-border shadow-sm hover:shadow-md transition-shadow"
-                  style={{ backgroundColor: c.hex }}
-                />
-                <div className="space-y-0.5">
-                  <p className="text-[11px] font-semibold text-center">{c.name}</p>
-                  <p className="text-[9px] text-muted-foreground text-center font-mono">{c.hex}</p>
-                  <p className="text-[9px] text-muted-foreground text-center uppercase tracking-wide">{c.role}</p>
-                </div>
+      {/* ── Hero Panel ── */}
+      <div className="relative overflow-hidden rounded-2xl border border-border/60">
+        <AspectRatio ratio={21 / 8}>
+          <div className={`w-full h-full bg-gradient-to-br ${heroImage.color}`}>
+            <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent" />
+          </div>
+        </AspectRatio>
+        {/* Overlay text */}
+        <div className="absolute inset-0 flex flex-col justify-end p-8">
+          <div className="max-w-xl space-y-3">
+            <p className="text-[10px] font-semibold tracking-[0.2em] uppercase text-white/60">Mood Direction</p>
+            <h2 className="text-3xl font-bold text-white tracking-tight">{moodBoard.mood}</h2>
+            <div className="flex items-start gap-2">
+              <Quote className="w-4 h-4 text-white/40 shrink-0 mt-0.5" />
+              <p className="text-sm text-white/75 leading-relaxed italic max-w-md">
+                {moodBoard.narrative}
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-1.5 pt-1">
+              {moodBoard.textures.map((t) => (
+                <span key={t} className="text-[10px] text-white/60 border border-white/20 px-2 py-0.5 rounded-full backdrop-blur-sm">
+                  {t}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Colour Palette ── */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-2">
+          <Palette className="w-4 h-4 text-muted-foreground" />
+          <h3 className="text-sm font-semibold">Colour Palette</h3>
+          <Badge variant="outline" className="text-[10px] ml-auto">{moodBoard.palette.length} colours</Badge>
+        </div>
+
+        {/* Continuous colour strip */}
+        <div className="flex h-10 rounded-xl overflow-hidden border border-border/60 shadow-sm">
+          {moodBoard.palette.map((c) => (
+            <div
+              key={c.hex}
+              className="flex-1 transition-all duration-200 hover:flex-[2] cursor-pointer"
+              style={{ backgroundColor: c.hex }}
+              title={`${c.name} — ${c.hex}`}
+            />
+          ))}
+        </div>
+
+        {/* Colour chips */}
+        <div className="grid grid-cols-5 gap-3">
+          {moodBoard.palette.map((c) => (
+            <div key={c.hex} className="space-y-2 group cursor-pointer">
+              <div
+                className="w-full aspect-[2/3] rounded-lg border border-border/50 shadow-sm group-hover:shadow-md group-hover:-translate-y-0.5 transition-all duration-200"
+                style={{ backgroundColor: c.hex }}
+              />
+              <div className="space-y-0.5 text-center">
+                <p className="text-[11px] font-semibold truncate">{c.name}</p>
+                <p className="text-[9px] font-mono text-muted-foreground uppercase">{c.hex}</p>
+                <Badge variant="outline" className="text-[9px] h-4 px-1.5 w-full justify-center">{c.role}</Badge>
               </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+            </div>
+          ))}
+        </div>
+      </div>
 
-      {/* Main image masonry */}
-      <div>
-        <h3 className="text-sm font-semibold mb-4">Mood Board Images</h3>
-        <div className="columns-2 sm:columns-3 gap-4 space-y-4">
-          {moodBoard.images.map((img) => {
-            const [w, h] = img.aspect.split("/").map(Number)
+      <Separator />
+
+      {/* ── Supporting Board ── */}
+      <div className="space-y-4">
+        <h3 className="text-sm font-semibold">Inspiration Board</h3>
+        <div className="grid grid-cols-12 gap-3">
+          {/* Row 1: 5 + 4 + 3 */}
+          {supportingImages.slice(0, 3).map((img, i) => {
+            const colSpans = [5, 4, 3]
             return (
-              <div key={img.label} className="break-inside-avoid mb-4">
-                <Card className="overflow-hidden border-border/70 hover:shadow-md transition-shadow">
-                  <AspectRatio ratio={w / h}>
-                    <div className={`w-full h-full bg-gradient-to-br ${img.color}`} />
-                  </AspectRatio>
-                  <div className="px-3 py-2 bg-muted/30">
-                    <p className="text-[11px] text-muted-foreground font-medium">{img.label}</p>
+              <div key={img.label} className="group" style={{ gridColumn: `span ${colSpans[i]}` }}>
+                <div className={`relative overflow-hidden rounded-xl border border-border/60 h-40 bg-gradient-to-br ${img.color} hover:shadow-md transition-all duration-200`}>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                  <div className="absolute bottom-2 left-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                    <p className="text-[10px] text-white font-medium">{img.label}</p>
                   </div>
-                </Card>
+                </div>
+                <p className="text-[11px] text-muted-foreground mt-1.5 px-0.5">{img.label}</p>
+              </div>
+            )
+          })}
+
+          {/* Row 2: 7 + 5 */}
+          {supportingImages.slice(3).map((img, i) => {
+            const colSpans = [7, 5]
+            return (
+              <div key={img.label} className="group" style={{ gridColumn: `span ${colSpans[i]}` }}>
+                <div className={`relative overflow-hidden rounded-xl border border-border/60 h-48 bg-gradient-to-br ${img.color} hover:shadow-md transition-all duration-200`}>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                  <div className="absolute bottom-2 left-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                    <p className="text-[10px] text-white font-medium">{img.label}</p>
+                  </div>
+                </div>
+                <p className="text-[11px] text-muted-foreground mt-1.5 px-0.5">{img.label}</p>
               </div>
             )
           })}
         </div>
       </div>
 
-      {/* Furniture + Lighting references */}
+      <Separator />
+
+      {/* ── Material Textures ── */}
+      <div className="space-y-4">
+        <h3 className="text-sm font-semibold">Material & Texture References</h3>
+        <div className="grid grid-cols-5 gap-3">
+          {[
+            { name: "Honed Limestone", swatch: "#e8dcc8", sub: "Floor & Facade" },
+            { name: "Oiled Oud Timber", swatch: "#7a5230", sub: "Ceiling & Frames" },
+            { name: "Polished Plaster", swatch: "#f5efe6", sub: "Interior Walls" },
+            { name: "Oxidized Bronze", swatch: "#8b6914", sub: "Fixtures & Rails" },
+            { name: "Terracotta Accent", swatch: "#c06040", sub: "Roof & Accents" },
+          ].map((mat) => (
+            <div key={mat.name} className="group cursor-pointer space-y-2">
+              <div
+                className="w-full h-16 rounded-lg border border-border/50 group-hover:shadow-md group-hover:-translate-y-0.5 transition-all duration-200"
+                style={{ backgroundColor: mat.swatch }}
+              />
+              <div>
+                <p className="text-[11px] font-semibold truncate">{mat.name}</p>
+                <p className="text-[10px] text-muted-foreground">{mat.sub}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <Separator />
+
+      {/* ── Furniture + Lighting ── */}
       <div className="grid sm:grid-cols-2 gap-6">
         {/* Furniture */}
         <Card className="border-border/70">
@@ -88,11 +162,11 @@ export function MoodBoardTab() {
           </CardHeader>
           <CardContent className="space-y-3">
             {moodBoard.furnitureRefs.map((ref) => (
-              <div key={ref.name} className="flex gap-3">
-                <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${ref.color} shrink-0 border border-border/60`} />
-                <div className="space-y-0.5">
-                  <p className="text-sm font-medium">{ref.name}</p>
-                  <p className="text-xs text-muted-foreground">{ref.style}</p>
+              <div key={ref.name} className="flex gap-3 p-2.5 rounded-lg hover:bg-muted/40 transition-colors group cursor-pointer">
+                <div className={`w-14 h-14 rounded-lg bg-gradient-to-br ${ref.color} shrink-0 border border-border/40`} />
+                <div className="flex-1 min-w-0 space-y-0.5 self-center">
+                  <p className="text-sm font-semibold group-hover:text-primary transition-colors">{ref.name}</p>
+                  <Badge variant="outline" className="text-[10px]">{ref.style}</Badge>
                 </div>
               </div>
             ))}
@@ -109,11 +183,13 @@ export function MoodBoardTab() {
           </CardHeader>
           <CardContent className="space-y-3">
             {moodBoard.lightingRefs.map((ref) => (
-              <div key={ref.name} className="flex gap-3">
-                <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${ref.color} shrink-0 border border-border/60`} />
-                <div className="space-y-0.5">
-                  <p className="text-sm font-medium">{ref.name}</p>
-                  <p className="text-xs text-muted-foreground">{ref.time}</p>
+              <div key={ref.name} className="flex gap-3 p-2.5 rounded-lg hover:bg-muted/40 transition-colors group cursor-pointer">
+                <div className={`w-14 h-14 rounded-lg bg-gradient-to-br ${ref.color} shrink-0 border border-border/40 flex items-end justify-end p-1.5`}>
+                  <Lightbulb className="w-3 h-3 text-white/60" />
+                </div>
+                <div className="flex-1 min-w-0 space-y-0.5 self-center">
+                  <p className="text-sm font-semibold group-hover:text-primary transition-colors">{ref.name}</p>
+                  <Badge variant="outline" className="text-[10px]">{ref.time}</Badge>
                 </div>
               </div>
             ))}

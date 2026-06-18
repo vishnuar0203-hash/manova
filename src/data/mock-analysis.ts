@@ -159,6 +159,8 @@ export const mockAnalysis = {
         location: "Riyadh, KSA",
         architect: "Abdulwahed Al-Wakeel",
         color: "from-amber-300 to-orange-400",
+        similarity: 96,
+        year: "2019",
       },
       {
         id: "a2",
@@ -167,6 +169,8 @@ export const mockAnalysis = {
         location: "Muscat, Oman",
         architect: "Muscat Heritage Studio",
         color: "from-stone-400 to-stone-500",
+        similarity: 88,
+        year: "2021",
       },
       {
         id: "a3",
@@ -175,6 +179,8 @@ export const mockAnalysis = {
         location: "Riyadh, KSA",
         architect: "Moriyama & Teshima",
         color: "from-teal-400 to-cyan-500",
+        similarity: 82,
+        year: "2020",
       },
       {
         id: "a4",
@@ -183,6 +189,8 @@ export const mockAnalysis = {
         location: "Dubai, UAE",
         architect: "Zaha Hadid Architects",
         color: "from-slate-400 to-slate-600",
+        similarity: 74,
+        year: "2018",
       },
     ],
     interior: [
@@ -193,6 +201,8 @@ export const mockAnalysis = {
         location: "Sharjah, UAE",
         architect: "Dar Al-Handasah",
         color: "from-yellow-400 to-amber-500",
+        similarity: 91,
+        year: "2022",
       },
       {
         id: "i2",
@@ -201,6 +211,8 @@ export const mockAnalysis = {
         location: "Abu Dhabi, UAE",
         architect: "HBA Hospitality",
         color: "from-zinc-400 to-zinc-600",
+        similarity: 85,
+        year: "2020",
       },
       {
         id: "i3",
@@ -209,6 +221,8 @@ export const mockAnalysis = {
         location: "Doha, Qatar",
         architect: "Ibrahim Mohammed Jaidah",
         color: "from-red-300 to-orange-400",
+        similarity: 79,
+        year: "2019",
       },
       {
         id: "i4",
@@ -217,6 +231,8 @@ export const mockAnalysis = {
         location: "Dubai, UAE",
         architect: "WATG",
         color: "from-emerald-400 to-teal-500",
+        similarity: 72,
+        year: "2023",
       },
     ],
     material: [
@@ -227,6 +243,8 @@ export const mockAnalysis = {
         location: "Local Quarry, KSA",
         architect: "Material Source",
         color: "from-stone-300 to-stone-500",
+        similarity: 97,
+        year: "Local",
       },
       {
         id: "m2",
@@ -235,6 +253,8 @@ export const mockAnalysis = {
         location: "Marrakech, Morocco",
         architect: "Atelier Moucharabieh",
         color: "from-amber-100 to-yellow-300",
+        similarity: 89,
+        year: "Artisan",
       },
       {
         id: "m3",
@@ -243,6 +263,8 @@ export const mockAnalysis = {
         location: "Southeast Asia",
         architect: "Green Timber Co.",
         color: "from-yellow-700 to-amber-800",
+        similarity: 83,
+        year: "FSC",
       },
       {
         id: "m4",
@@ -251,6 +273,8 @@ export const mockAnalysis = {
         location: "Saudi Foundry, KSA",
         architect: "Al-Zamil Metalcraft",
         color: "from-yellow-600 to-amber-700",
+        similarity: 78,
+        year: "Custom",
       },
     ],
     landscape: [
@@ -261,6 +285,8 @@ export const mockAnalysis = {
         location: "AlUla, KSA",
         architect: "LANDPROCESS",
         color: "from-lime-400 to-green-500",
+        similarity: 93,
+        year: "2022",
       },
       {
         id: "l2",
@@ -269,6 +295,8 @@ export const mockAnalysis = {
         location: "Riyadh, KSA",
         architect: "SWA Group",
         color: "from-emerald-500 to-green-600",
+        similarity: 87,
+        year: "2020",
       },
       {
         id: "l3",
@@ -277,6 +305,8 @@ export const mockAnalysis = {
         location: "Al-Ahsa, KSA",
         architect: "Gustafson Porter",
         color: "from-green-400 to-teal-500",
+        similarity: 81,
+        year: "2021",
       },
       {
         id: "l4",
@@ -285,6 +315,8 @@ export const mockAnalysis = {
         location: "Diriyah, KSA",
         architect: "Cracknell Landscape",
         color: "from-amber-300 to-yellow-500",
+        similarity: 76,
+        year: "2023",
       },
     ],
   },

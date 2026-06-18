@@ -1,149 +1,270 @@
+import { useState } from "react"
 import { mockAnalysis } from "@/data/mock-analysis"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
+import { Separator } from "@/components/ui/separator"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
-import { AlertCircle, AlertTriangle, Info } from "lucide-react"
+import { AlertCircle, AlertTriangle, Info, CheckSquare, Square, Sparkles, TrendingUp } from "lucide-react"
 
 const priorityConfig = {
-  high: { icon: AlertCircle, className: "text-destructive", badge: "destructive" as const },
-  medium: { icon: AlertTriangle, className: "text-chart-1", badge: "secondary" as const },
-  low: { icon: Info, className: "text-muted-foreground", badge: "outline" as const },
+  high:   { icon: AlertCircle,   color: "text-destructive",     bg: "bg-destructive/5 border-destructive/20",  badge: "destructive" as const, label: "Critical" },
+  medium: { icon: AlertTriangle, color: "text-chart-1",         bg: "bg-chart-1/5 border-chart-1/20",          badge: "secondary"   as const, label: "Medium" },
+  low:    { icon: Info,          color: "text-muted-foreground", bg: "bg-muted/40 border-border/60",            badge: "outline"     as const, label: "Low" },
 }
 
-const statusConfig: Record<string, { color: string; badge: "default" | "secondary" | "destructive" | "outline" }> = {
-  excellent: { color: "text-chart-2", badge: "default" },
-  good: { color: "text-chart-4", badge: "secondary" },
-  improve: { color: "text-destructive", badge: "destructive" },
+function scoreColor(score: number) {
+  if (score >= 85) return { bar: "bg-chart-2", text: "text-chart-2", label: "Excellent" }
+  if (score >= 75) return { bar: "bg-chart-4", text: "text-chart-4", label: "Good" }
+  return { bar: "bg-destructive", text: "text-destructive", label: "Needs Work" }
 }
+
+function RadialScore({ score, size = 120 }: { score: number; size?: number }) {
+  const r = 40
+  const circumference = 2 * Math.PI * r
+  const filled = (score / 100) * circumference
+  const sc = scoreColor(score)
+
+  return (
+    <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
+      <svg width={size} height={size} viewBox="0 0 100 100" className="-rotate-90">
+        <circle cx="50" cy="50" r={r} fill="none" stroke="var(--border)" strokeWidth="8" />
+        <circle
+          cx="50" cy="50" r={r}
+          fill="none"
+          stroke="var(--chart-2)"
+          strokeWidth="8"
+          strokeDasharray={`${filled} ${circumference}`}
+          strokeLinecap="round"
+          className="transition-all duration-1000"
+        />
+      </svg>
+      <div className="absolute flex flex-col items-center">
+        <span className={`text-2xl font-bold tabular-nums ${sc.text}`}>{score}</span>
+        <span className="text-[10px] text-muted-foreground">/100</span>
+      </div>
+    </div>
+  )
+}
+
+const CHECKLIST_ITEMS = [
+  { id: 1, text: "Reduce window overexposure by 1.5 stops", priority: "high" as const, done: false },
+  { id: 2, text: "Add micro-roughness to floor material", priority: "medium" as const, done: false },
+  { id: 3, text: "Fix shadow banding on plaster wall", priority: "medium" as const, done: false },
+  { id: 4, text: "Scale furniture down 8% relative to room height", priority: "low" as const, done: true },
+  { id: 5, text: "Add fabric softness texture to cushions", priority: "low" as const, done: true },
+]
 
 export function RenderReviewTab() {
   const { renderReview } = mockAnalysis
+  const [checklist, setChecklist] = useState(CHECKLIST_ITEMS)
+
+  const toggleItem = (id: number) => {
+    setChecklist((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, done: !item.done } : item))
+    )
+  }
+
+  const doneCount = checklist.filter((i) => i.done).length
+  const overallSc = scoreColor(renderReview.overallScore)
 
   return (
     <div className="space-y-6">
-      {/* Overall score + dimension bars */}
-      <div className="grid lg:grid-cols-[200px_1fr] gap-6">
-        {/* Radial score */}
+
+      {/* ── Score Header ── */}
+      <div className="grid lg:grid-cols-[auto_1fr] gap-6">
+        {/* Main score */}
         <Card className="border-border/70">
-          <CardContent className="flex flex-col items-center justify-center pt-6 pb-6 gap-2">
-            <div className="relative flex items-center justify-center">
-              <svg className="w-28 h-28 -rotate-90" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="40" fill="none" stroke="var(--border)" strokeWidth="10" />
-                <circle
-                  cx="50" cy="50" r="40"
-                  fill="none"
-                  stroke="var(--chart-2)"
-                  strokeWidth="10"
-                  strokeDasharray={`${(renderReview.overallScore / 100) * 251.2} 251.2`}
-                  strokeLinecap="round"
-                  className="transition-all duration-1000"
-                />
-              </svg>
-              <div className="absolute flex flex-col items-center">
-                <span className="text-3xl font-bold tabular-nums">{renderReview.overallScore}</span>
-                <span className="text-xs text-muted-foreground">/100</span>
-              </div>
+          <CardContent className="flex flex-col items-center justify-center pt-6 pb-6 gap-3 min-w-[180px]">
+            <RadialScore score={renderReview.overallScore} size={128} />
+            <div className="text-center space-y-1">
+              <p className="text-sm font-semibold">Overall Quality</p>
+              <Badge variant="secondary" className={`text-[10px] ${overallSc.text}`}>
+                {overallSc.label}
+              </Badge>
             </div>
-            <p className="text-sm font-semibold text-center">Overall Quality</p>
-            <Badge variant="secondary" className="text-[10px]">Good</Badge>
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground bg-muted/40 px-3 py-1.5 rounded-full">
+              <Sparkles className="w-3 h-3 text-chart-2" />
+              AI Render Analysis
+            </div>
           </CardContent>
         </Card>
 
-        {/* Dimension bars with status */}
-        <Card className="border-border/70">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-semibold">Quality Dimensions</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {renderReview.dimensions.map((d) => {
-              const cfg = statusConfig[d.status as keyof typeof statusConfig] ?? statusConfig.good
-              return (
-                <div key={d.name} className="space-y-1.5">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between mb-0.5">
-                        <span className="text-sm font-medium">{d.name}</span>
-                        <div className="flex items-center gap-2 shrink-0">
-                          <span className={`text-sm font-bold tabular-nums ${cfg.color}`}>{d.score}</span>
-                          <Badge variant={cfg.badge} className="text-[10px] w-18 justify-center">
-                            {d.status === "improve" ? "Improve" : d.status.charAt(0).toUpperCase() + d.status.slice(1)}
-                          </Badge>
-                        </div>
-                      </div>
-                      <Progress value={d.score} className="h-1.5" />
-                    </div>
+        {/* Dimension score cards */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 content-start">
+          {renderReview.dimensions.map((d) => {
+            const sc = scoreColor(d.score)
+            return (
+              <Card key={d.name} className="border-border/70 hover:border-border transition-colors">
+                <CardContent className="pt-4 pb-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold text-muted-foreground">{d.name}</span>
+                    <span className={`text-lg font-bold tabular-nums ${sc.text}`}>{d.score}</span>
                   </div>
-                  <p className="text-[11px] text-muted-foreground leading-relaxed">{d.notes}</p>
+                  <Progress value={d.score} className="h-1" />
+                  <div className="flex items-center justify-between">
+                    <Badge
+                      variant={d.status === "excellent" ? "default" : d.status === "good" ? "secondary" : "destructive"}
+                      className="text-[9px] h-4"
+                    >
+                      {sc.label}
+                    </Badge>
+                    {d.status === "excellent" && <TrendingUp className="w-3 h-3 text-chart-2" />}
+                  </div>
+                </CardContent>
+              </Card>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* ── Before / After ── */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h4 className="text-sm font-semibold">Before / After Comparison</h4>
+          <Badge variant="outline" className="text-[10px] text-chart-2 border-chart-2/30 bg-chart-2/5">
+            AI Enhanced
+          </Badge>
+        </div>
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Current Render</p>
+            <div className="overflow-hidden rounded-xl border border-border/70">
+              <AspectRatio ratio={16 / 9}>
+                <div className="w-full h-full bg-gradient-to-br from-stone-300 to-zinc-400 dark:from-stone-700 dark:to-zinc-800 flex items-end p-4">
+                  <div className="flex items-center gap-1.5 bg-black/40 backdrop-blur-sm rounded-full px-3 py-1">
+                    <div className="w-1.5 h-1.5 rounded-full bg-destructive" />
+                    <span className="text-[10px] text-white/80">Issues detected</span>
+                  </div>
                 </div>
-              )
-            })}
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Before/after panels */}
-      <div className="grid sm:grid-cols-2 gap-4">
-        <Card className="overflow-hidden border-border/70">
-          <CardHeader className="pb-2 pt-3 px-4">
-            <CardTitle className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Current Render</CardTitle>
-          </CardHeader>
-          <CardContent className="px-4 pb-4">
-            <AspectRatio ratio={16 / 9}>
-              <div className="w-full h-full rounded-md bg-gradient-to-br from-stone-300 to-zinc-400 dark:from-stone-700 dark:to-zinc-800 flex items-center justify-center">
-                <span className="text-xs text-muted-foreground">Render preview</span>
-              </div>
-            </AspectRatio>
-          </CardContent>
-        </Card>
-
-        <Card className="overflow-hidden border-chart-2/30 border-border/70">
-          <CardHeader className="pb-2 pt-3 px-4">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Improved Preview</CardTitle>
-              <Badge variant="outline" className="text-[10px] bg-chart-2/10 text-chart-2 border-chart-2/20">AI Enhanced</Badge>
+              </AspectRatio>
             </div>
-          </CardHeader>
-          <CardContent className="px-4 pb-4">
-            <AspectRatio ratio={16 / 9}>
-              <div className="w-full h-full rounded-md bg-gradient-to-br from-amber-200 to-stone-300 dark:from-amber-900/50 dark:to-stone-700 flex items-center justify-center">
-                <span className="text-xs text-muted-foreground">Enhanced preview</span>
-              </div>
-            </AspectRatio>
-          </CardContent>
-        </Card>
+            <div className="flex flex-wrap gap-1.5">
+              {renderReview.annotations.filter((a) => a.priority === "high").map((a) => (
+                <Badge key={a.id} variant="destructive" className="text-[10px]">{a.title}</Badge>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">AI-Improved Preview</p>
+            <div className="overflow-hidden rounded-xl border border-chart-2/25">
+              <AspectRatio ratio={16 / 9}>
+                <div className="w-full h-full bg-gradient-to-br from-amber-200 to-stone-300 dark:from-amber-900/50 dark:to-stone-700 flex items-end p-4">
+                  <div className="flex items-center gap-1.5 bg-black/40 backdrop-blur-sm rounded-full px-3 py-1">
+                    <div className="w-1.5 h-1.5 rounded-full bg-chart-2" />
+                    <span className="text-[10px] text-white/80">All issues resolved</span>
+                  </div>
+                </div>
+              </AspectRatio>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {renderReview.annotations.filter((a) => a.priority === "high").map((a) => (
+                <Badge key={a.id} variant="outline" className="text-[10px] text-chart-2 border-chart-2/30">{a.title} — fixed</Badge>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Annotations */}
-      <Card className="border-border/70">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-sm font-semibold">
-            Improvement Annotations
-            <Badge variant="outline" className="ml-2 text-[10px]">{renderReview.annotations.length} issues</Badge>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
+      <Separator />
+
+      {/* ── Issue Annotations ── */}
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <h4 className="text-sm font-semibold">Issue Annotations</h4>
+          <Badge variant="outline" className="text-[10px]">
+            {renderReview.annotations.length} issues
+          </Badge>
+          <div className="ml-auto flex gap-1.5">
+            {(["high", "medium", "low"] as const).map((p) => {
+              const count = renderReview.annotations.filter((a) => a.priority === p).length
+              return count > 0 ? (
+                <Badge key={p} variant={priorityConfig[p].badge} className="text-[10px]">
+                  {priorityConfig[p].label} {count}
+                </Badge>
+              ) : null
+            })}
+          </div>
+        </div>
+
+        <div className="space-y-2">
           {renderReview.annotations.map((a) => {
             const cfg = priorityConfig[a.priority as keyof typeof priorityConfig]
             const Icon = cfg.icon
             return (
-              <div key={a.id} className="flex gap-3 p-3.5 rounded-lg border border-border/70 hover:bg-muted/30 transition-colors">
-                <Icon className={`w-4 h-4 mt-0.5 shrink-0 ${cfg.className}`} />
+              <div
+                key={a.id}
+                className={`flex gap-3 p-4 rounded-xl border transition-colors ${cfg.bg}`}
+              >
+                <div className="shrink-0 mt-0.5">
+                  <div className={`w-7 h-7 rounded-full flex items-center justify-center ${cfg.color === "text-destructive" ? "bg-destructive/10" : cfg.color === "text-chart-1" ? "bg-chart-1/10" : "bg-muted"}`}>
+                    <Icon className={`w-3.5 h-3.5 ${cfg.color}`} />
+                  </div>
+                </div>
                 <div className="flex-1 min-w-0 space-y-1">
                   <div className="flex items-start justify-between gap-2">
                     <p className="text-sm font-semibold">{a.title}</p>
-                    <Badge variant={cfg.badge} className="text-[10px] shrink-0 capitalize">{a.priority}</Badge>
+                    <Badge variant={cfg.badge} className="text-[10px] shrink-0">{cfg.label}</Badge>
                   </div>
                   <p className="text-xs text-muted-foreground leading-relaxed">{a.description}</p>
-                  <p className="text-[11px] text-muted-foreground font-mono">
-                    Position: {a.x}%, {a.y}%
-                  </p>
+                  <div className="flex items-center gap-3 pt-0.5">
+                    <span className="text-[10px] text-muted-foreground/60 font-mono">
+                      Zone: {a.x}% × {a.y}%
+                    </span>
+                  </div>
                 </div>
               </div>
             )
           })}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
+
+      <Separator />
+
+      {/* ── Improvement Checklist ── */}
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <h4 className="text-sm font-semibold">Improvement Checklist</h4>
+          <Badge variant="secondary" className="text-[10px]">
+            {doneCount} / {checklist.length} done
+          </Badge>
+          <div className="ml-auto">
+            <Progress value={(doneCount / checklist.length) * 100} className="w-24 h-1.5" />
+          </div>
+        </div>
+
+        <div className="space-y-1.5">
+          {checklist.map((item) => {
+            const cfg = priorityConfig[item.priority]
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => toggleItem(item.id)}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl border text-left transition-all duration-200 hover:bg-muted/30 ${
+                  item.done ? "opacity-60 bg-muted/20 border-border/40" : "border-border/60 bg-card"
+                }`}
+              >
+                {item.done ? (
+                  <CheckSquare className="w-4 h-4 text-chart-2 shrink-0" />
+                ) : (
+                  <Square className={`w-4 h-4 shrink-0 ${cfg.color}`} />
+                )}
+                <span className={`text-sm flex-1 transition-all ${item.done ? "line-through text-muted-foreground" : "text-foreground"}`}>
+                  {item.text}
+                </span>
+                <Badge
+                  variant={item.done ? "outline" : cfg.badge}
+                  className="text-[10px] shrink-0"
+                >
+                  {item.done ? "Done" : cfg.label}
+                </Badge>
+              </button>
+            )
+          })}
+        </div>
+      </div>
     </div>
   )
 }
